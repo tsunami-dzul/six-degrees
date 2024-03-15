@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.remove = exports.update = exports.create = exports.getByEmail = exports.list = void 0;
+exports.remove = exports.update = exports.create = exports.findRelationshipDistance = exports.list = void 0;
 const user_service_1 = require("../services/user.service");
 const list = async (req, res) => {
     try {
@@ -19,19 +19,21 @@ const list = async (req, res) => {
     }
 };
 exports.list = list;
-const getByEmail = async (req, res) => {
+const findRelationshipDistance = async (req, res) => {
     try {
-        const email = req.params.email;
-        const user = await (0, user_service_1.getUserByEmailService)(email);
-        if (!user) {
+        const name = req.params.name;
+        const result = await (0, user_service_1.findUserRelationshipDistance)(name);
+        if (!result) {
             res.status(404).json({
                 ok: false,
-                message: `The user with email ${email} was not found.`,
+                message: 'User not found',
             });
         }
         res.json({
             ok: true,
-            user,
+            message: `2nd and 3rd relationship distance of the user ${name} against the rest of the users`,
+            adjencyList: result.graph,
+            distances: result.distances,
         });
     }
     catch (error) {
@@ -41,7 +43,7 @@ const getByEmail = async (req, res) => {
         });
     }
 };
-exports.getByEmail = getByEmail;
+exports.findRelationshipDistance = findRelationshipDistance;
 const create = async (req, res) => {
     try {
         const { name, friends } = req.body;

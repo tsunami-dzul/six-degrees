@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserService = exports.updateUserService = exports.createUserService = exports.getUserByEmailService = exports.listUserService = void 0;
+exports.deleteUserService = exports.updateUserService = exports.createUserService = exports.findUserRelationshipDistance = exports.listUserService = void 0;
 const user_data_access_1 = require("../data-access/user.data-access");
+const dijkstra_1 = require("../utils/dijkstra");
 const listUserService = async () => {
     try {
         const userList = await (0, user_data_access_1.listUser)();
@@ -13,17 +14,29 @@ const listUserService = async () => {
     }
 };
 exports.listUserService = listUserService;
-const getUserByEmailService = async (email) => {
+const findUserRelationshipDistance = async (name) => {
     try {
-        const user = await (0, user_data_access_1.getUserByEmail)(email);
-        return user;
+        const userList = await (0, user_data_access_1.listUser)();
+        const graph = {};
+        for (let user of userList.users) {
+            const friends = {};
+            for (let friend of user.friends) {
+                friends[friend] = 1;
+            }
+            graph[user.name] = friends;
+        }
+        const distances = (0, dijkstra_1.dijkstra)(graph, name);
+        return {
+            graph,
+            distances,
+        };
     }
     catch (error) {
         console.error('Service: ', error);
         throw error;
     }
 };
-exports.getUserByEmailService = getUserByEmailService;
+exports.findUserRelationshipDistance = findUserRelationshipDistance;
 const createUserService = async (user) => {
     try {
         const isUserCreated = await (0, user_data_access_1.createUser)(user);
