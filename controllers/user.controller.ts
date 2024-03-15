@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { listUserService, getUserByEmailService, createUserService, updateUserService, deleteUserService } from '../services/user.service';
+import { listUserService, createUserService, updateUserService, deleteUserService, findUserRelationshipDistance } from '../services/user.service';
 import { IUser } from '../model/IUser';
 
 export const list = async (req: Request, res: Response): Promise<void> => {
@@ -19,22 +19,24 @@ export const list = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const getByEmail = async (req: Request, res: Response): Promise<void> => {
+export const findRelationshipDistance = async (req: Request, res: Response): Promise<void> => {
   try {
-    const email = req.params.email;
+    const name = req.params.name;
 
-    const user = await getUserByEmailService(email);
+    const result = await findUserRelationshipDistance(name);
 
-    if (!user) {
+    if (!result) {
       res.status(404).json({
         ok: false,
-        message: `The user with email ${email} was not found.`,
+        message: 'User not found',
       });
     }
 
     res.json({
       ok: true,
-      user,
+      message: `2nd and 3rd relationship distance of the user ${name} against the rest of the users`,
+      adjencyList: result.graph,
+      distances: result.distances,
     });
   } catch (error) {
     res.status(500).json({

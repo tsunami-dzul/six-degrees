@@ -19,27 +19,6 @@ export const listUser = async (): Promise<IUsers> => {
   }
 };
 
-export const getUserByEmail = async (name: string): Promise<IUser | null> => {
-  try {
-    const user = await User.findOne({ name });
-
-    if (!user) {
-      return null;
-    }
-
-    const response: IUser = {
-      id: user?.id,
-      name: user.name,
-      friends: user.friends,
-    };
-
-    return response;
-  } catch (error) {
-    console.error('DTO:', error);
-    throw error;
-  }
-};
-
 export const createUser = async (user: IUser): Promise<boolean> => {
   try {
     const newUser = new User(user);

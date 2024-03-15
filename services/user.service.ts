@@ -1,5 +1,8 @@
-import { createUser, deleteUser, getUserByEmail, listUser, updateUser } from '../data-access/user.data-access';
+import { createUser, deleteUser, listUser, updateUser } from '../data-access/user.data-access';
+import { IDistanceResponse } from '../model/IDistance';
+import { IGraph } from '../model/IGraph';
 import { IUser, IUsers } from '../model/IUser';
+import { dijkstra } from '../utils/dijkstra';
 
 export const listUserService = async (): Promise<IUsers> => {
   try {
@@ -13,11 +16,28 @@ export const listUserService = async (): Promise<IUsers> => {
   }
 };
 
-export const getUserByEmailService = async (email: string): Promise<IUser | null> => {
+export const findUserRelationshipDistance = async (name: string): Promise<IDistanceResponse> => {
   try {
-    const user = await getUserByEmail(email);
+    const userList = await listUser();
 
-    return user;
+    const graph: IGraph = {};
+
+    for (let user of userList.users) {
+      const friends: IGraph = {};
+
+      for (let friend of user.friends) {
+        friends[friend] = 1;
+      }
+
+      graph[user.name] = friends;
+    }
+
+    const distances = dijkstra(graph, name);
+
+    return {
+      graph,
+      distances,
+    };
   } catch (error) {
     console.error('Service: ', error);
 

@@ -1,18 +1,13 @@
-# From the base image node
-FROM node:8.11-slim
+FROM node:latest
+
 WORKDIR /usr/src/app
-            
-# Copy all the files from your file system to the container file system
-COPY package*.json ./
-            
-# Install all dependencies
+
+COPY package.json /usr/src/app
+
 RUN npm install
-            
-# Copy other files as well
-COPY . ./
-            
-# Expose the port
-EXPOSE 5500
-            
-# Command to execute when the image is instantiated
-CMD ["npm","start"]
+
+COPY ./dist .
+
+EXPOSE 3000
+
+CMD ["node", "app.js"]
