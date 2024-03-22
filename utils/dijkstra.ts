@@ -15,7 +15,7 @@ export const dijkstra = (graph: IGraph, start: string) => {
   while (nodes.length) {
     nodes.sort((a: string, b: string) => distances[a] - distances[b]);
 
-    let closestNode = nodes.shift() ?? 0;
+    let closestNode = nodes.shift() ?? '';
 
     if (distances[closestNode] === Infinity) break;
 
@@ -37,11 +37,11 @@ export const dijkstra = (graph: IGraph, start: string) => {
   return result;
 };
 
-const deleteNulls = (distances: any) => {
-  const newDistances: any = {};
+const deleteNulls = (distances: IDistance) => {
+  const newDistances: IDistance = {};
 
-  for (let key in distances) {
-    if (distances[key] !== Infinity) {
+  for (const [key, value] of Object.entries(distances)) {
+    if (value !== Infinity) {
       newDistances[key] = distances[key];
     }
   }

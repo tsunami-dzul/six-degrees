@@ -15,6 +15,7 @@ export const listUser = async (): Promise<IUsers> => {
     return response;
   } catch (error) {
     console.error('DTO:', error);
+
     throw error;
   }
 };
